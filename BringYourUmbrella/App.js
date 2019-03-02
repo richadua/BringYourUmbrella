@@ -8,30 +8,44 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, Alert} from 'react-native';
+import {Platform, StyleSheet, Text, View, Alert, TouchableOpacity, Button} from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
-const homePlace = {description: 'Home', geometry: { location: { lat: 48.8152937, lng: 2.4597668 } }};
-const lastAddr = {description: 'Last Address', geometry: { location: { lat: JSON.stringify(latitude), lng: JSON.stringify(longitude) } }};
-
-var latitude;
-var longitude;
+// const homePlace = {description: 'Home', geometry: { location: { lat: 48.8152937, lng: 2.4597668 } }};
+// const lastAddr = {description: 'Last Address', geometry: { location: { lat: JSON.stringify(this.state.latitude), lng: JSON.stringify(this.state.longitude) } }};
 
 type Props = {};
 export default class App extends Component<Props> {
+  
+  state = {
+    latitude: null,
+    longitude: null
+  };
+
+  findCoordinates = () => {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        this.setState({ latitude: JSON.stringify(position.coords.latitude)});
+        this.setState({ longitude: JSON.stringify(position.coords.longitude)});
+      },
+      error => Alert.alert("Please enable location services"),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+  };
+
   render() {
     return (
       <View style={styles.locationPrompt}>
-        <Text style={styles.welcome}>Set your home location here:</Text>
+        <Text style={styles.homeLoc}>Edit your home location here</Text>
         <GooglePlacesAutocomplete
         placeholder='Type the address'
         minLength={2}
         autoFocus={false}
         fetchDetails={true}
         onPress={(data, details = null) => {
-          latitude = details.geometry.location.lat
-          longitude = details.geometry.location.lng
-          Alert.alert(JSON.stringify(latitude))
+          this.state.latitude = details.geometry.location.lat
+          this.state.longitude = details.geometry.location.lng
+          Alert.alert(JSON.stringify(this.state.latitude))
         }}
         getDefaultValue={() => {
           return '';
@@ -47,11 +61,10 @@ export default class App extends Component<Props> {
         GooglePlacesSearchQuery={{
           rankby: 'distance'
         }}
-        
         filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
-        predefinedPlaces={[homePlace, lastAddr]}
-        predefinedPlacesAlwaysVisible={true}
-      />
+        // predefinedPlaces={[homePlace, lastAddr]}
+        predefinedPlacesAlwaysVisible={true} />
+        <Button title="Use current location" style={styles.currentLoc} onPress={this.findCoordinates}/>
       </View>
       );
   }
@@ -64,7 +77,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
-  welcome: {
+  homeLoc: {
     fontSize: 20,
     textAlign: 'center',
     marginTop: 150,
@@ -88,4 +101,11 @@ const styles = StyleSheet.create({
     color: '#5d5d5d',
     fontSize: 16
   },
+  currentLoc: {
+    flex: 1,
+    marginTop: 0,
+    // marginBottom: 50,
+    color: '#5d5d5d',
+    fontSize: 16
+  }
 });

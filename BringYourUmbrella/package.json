@@ -9,13 +9,11 @@
   "dependencies": {
     "react": "16.6.3",
     "react-native": "0.58.6",
-<<<<<<< HEAD
+
     "react-native-autocomplete-input": "^3.6.0",
     "react-native-elements": "^1.1.0",
     "react-native-google-places-autocomplete": "^1.3.9",
-=======
-    "react-native-elements": "^1.1.0",
->>>>>>> c6e6d7ee6a4f414424045d1f90ba76b801231c71
+
     "react-native-vector-icons": "^6.3.0"
   },
   "devDependencies": {

@@ -32,7 +32,17 @@ export default class App extends Component<Props> {
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
   };
-
+  
+  save() {
+	  var KeyValue = [['latitude', this.state.latitude], ['longtitude', this.state.longitude]]
+	  AsyncStorage.multiSet(KeyValue, function(errs){
+      if(errs){
+        return;
+      }
+      alert('Lat&Lon store success');
+    });
+  }
+  
   render() {
     return (
       <View style={styles.locationPrompt}>

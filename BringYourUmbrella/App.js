@@ -8,43 +8,84 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View, Alert} from 'react-native';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+const homePlace = {description: 'Home', geometry: { location: { lat: 48.8152937, lng: 2.4597668 } }};
+const lastAddr = {description: 'Last Address', geometry: { location: { lat: JSON.stringify(latitude), lng: JSON.stringify(longitude) } }};
+
+var latitude;
+var longitude;
 
 type Props = {};
 export default class App extends Component<Props> {
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
+      <View style={styles.locationPrompt}>
+        <Text style={styles.welcome}>Set your home location here:</Text>
+        <GooglePlacesAutocomplete
+        placeholder='Type the address'
+        minLength={2}
+        autoFocus={false}
+        fetchDetails={true}
+        onPress={(data, details = null) => {
+          latitude = details.geometry.location.lat
+          longitude = details.geometry.location.lng
+          Alert.alert(JSON.stringify(latitude))
+        }}
+        getDefaultValue={() => {
+          return '';
+        }}
+        query={{
+          key: 'AIzaSyATU8DzZYhal2hVPBUES5MvdF0HdbcdeM4',
+          language: 'en'
+        }}
+        style={[styles.description, styles.textInputContainer, styles.textInput, styles.container]}
+        currentLocation={true}
+        currentLocationLabel="Current location"
+        nearbyPlacesAPI='GooglePlacesSearch'
+        GooglePlacesSearchQuery={{
+          rankby: 'distance'
+        }}
+        
+        filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
+        predefinedPlaces={[homePlace, lastAddr]}
+        predefinedPlacesAlwaysVisible={true}
+      />
       </View>
-    );
+      );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
+  locationPrompt: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
   welcome: {
     fontSize: 20,
     textAlign: 'center',
-    margin: 10,
+    marginTop: 150,
+    marginBottom: 10
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  description: {
+    fontWeight: 'bold',
+  },
+  // predefinedPlacesDescription: {
+  //   color: '#1faadb',
+  // },
+  textInputContainer: {
+    backgroundColor: 'rgba(0,0,0,0)',
+    borderTopWidth: 0,
+    borderBottomWidth:0
+  },
+  textInput: {
+    marginLeft: 0,
+    marginRight: 0,
+    height: 38,
+    color: '#5d5d5d',
+    fontSize: 16
   },
 });

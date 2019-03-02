@@ -8,8 +8,10 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, Alert, TouchableOpacity, Button} from 'react-native';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import {Platform, StyleSheet, Text, View, Alert, TouchableOpacity, TextInput, ScrollView, Button, ActivityIndicator} from 'react-native';
+import { GoogleAutoComplete } from 'react-native-google-autocomplete';
+import { WeatherWidget } from 'react-native-weather';
+import LocationItem from './components/LocationItem'
 
 // const homePlace = {description: 'Home', geometry: { location: { lat: 48.8152937, lng: 2.4597668 } }};
 // const lastAddr = {description: 'Last Address', geometry: { location: { lat: JSON.stringify(this.state.latitude), lng: JSON.stringify(this.state.longitude) } }};
@@ -46,35 +48,54 @@ export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.locationPrompt}>
+        <WeatherWidget
+          api = {"3a80ec57abc9400a446bdf8a2fafccd7"}
+          lat = {37.8267}
+          lng = {-122.4233}
+          style = {styles.weatherWidget}
+        />
+        <TouchableOpacity
+         style={styles.currentLoc}
+         onPress={this.findCoordinates}>
+         <Text> Use current location </Text>
+       </TouchableOpacity>
         <Text style={styles.homeLoc}>Edit your home location here</Text>
-        <GooglePlacesAutocomplete
-        placeholder='Type the address'
-        minLength={2}
-        autoFocus={false}
-        fetchDetails={true}
-        onPress={(data, details = null) => {
-          this.state.latitude = details.geometry.location.lat
-          this.state.longitude = details.geometry.location.lng
-          Alert.alert(JSON.stringify(this.state.latitude))
-        }}
-        getDefaultValue={() => {
-          return '';
-        }}
-        query={{
-          key: 'AIzaSyATU8DzZYhal2hVPBUES5MvdF0HdbcdeM4',
-          language: 'en'
-        }}
-        style={[styles.description, styles.textInputContainer, styles.textInput, styles.container]}
-        currentLocation={true}
-        currentLocationLabel="Current location"
-        nearbyPlacesAPI='GooglePlacesSearch'
-        GooglePlacesSearchQuery={{
-          rankby: 'distance'
-        }}
-        filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
-        // predefinedPlaces={[homePlace, lastAddr]}
-        predefinedPlacesAlwaysVisible={true} />
-        <Button title="Use current location" style={styles.currentLoc} onPress={this.findCoordinates}/>
+        <GoogleAutoComplete apiKey={"AIzaSyATU8DzZYhal2hVPBUES5MvdF0HdbcdeM4"} debounce={500} minLength={3}>
+          {({
+            handleTextChange,
+            locationResults,
+            fetchDetails,
+            isSearching,
+            inputValue,
+            clearSearchs
+          }) => (
+            <React.Fragment>
+              <View style={styles.inputWrapper}>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Search a places"
+                  onChangeText={handleTextChange}
+                  value={inputValue}
+                />
+                <TouchableOpacity
+                  style={styles.clearButton}
+                  onPress={clearSearchs}>
+                  <Text> Clear </Text>
+                </TouchableOpacity>
+              </View>
+              {isSearching && <ActivityIndicator size="large" color="red" />}
+              <ScrollView style = {styles.ScrollView}>
+                {locationResults.map(el => (
+                  <LocationItem
+                    {...el}
+                    key={el.id}
+                    fetchDetails={fetchDetails}
+                  />
+                ))}
+              </ScrollView>
+            </React.Fragment>
+          )}
+        </GoogleAutoComplete>
       </View>
       );
   }
@@ -83,6 +104,7 @@ export default class App extends Component<Props> {
 const styles = StyleSheet.create({
   locationPrompt: {
     flex: 1,
+    marginTop:50,
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
@@ -90,32 +112,39 @@ const styles = StyleSheet.create({
   homeLoc: {
     fontSize: 20,
     textAlign: 'center',
-    marginTop: 150,
+    marginTop: 1,
     marginBottom: 10
   },
-  description: {
-    fontWeight: 'bold',
-  },
-  // predefinedPlacesDescription: {
-  //   color: '#1faadb',
-  // },
-  textInputContainer: {
-    backgroundColor: 'rgba(0,0,0,0)',
-    borderTopWidth: 0,
-    borderBottomWidth:0
-  },
   textInput: {
-    marginLeft: 0,
+    marginLeft: 20,
     marginRight: 0,
     height: 38,
+    textAlign: 'left',
+    width: 300,
     color: '#5d5d5d',
     fontSize: 16
   },
   currentLoc: {
-    flex: 1,
-    marginTop: 0,
-    // marginBottom: 50,
-    color: '#5d5d5d',
-    fontSize: 16
+    marginTop: 50,
+    color: 'red',
+    fontSize: 16,
+    marginBottom: 50
+  },
+  weatherWidget: {
+    marginTop: 50
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    marginLeft: 0
+  },
+  clearButton: {
+    marginRight: 10,
+    marginLeft: 10,
+    marginTop:10
+  },
+  ScrollView: {
+    width: 400,
+    textAlign: 'left',
+    marginLeft: 70
   }
 });

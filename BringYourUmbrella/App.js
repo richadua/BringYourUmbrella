@@ -8,7 +8,7 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, Alert, TouchableOpacity, TextInput, ScrollView, Button, ActivityIndicator} from 'react-native';
+import {Platform, StyleSheet, Text, View, Alert, TouchableOpacity, TextInput, ScrollView, Button, ActivityIndicator, AsyncStorage} from 'react-native';
 import { GoogleAutoComplete } from 'react-native-google-autocomplete';
 import { WeatherWidget } from 'react-native-weather';
 import LocationItem from './components/LocationItem'
@@ -18,12 +18,21 @@ import LocationItem from './components/LocationItem'
 
 type Props = {};
 export default class App extends Component<Props> {
-  
+
   state = {
     latitude: null,
     longitude: null
-  };
-
+  }
+  
+  async getData() {
+    AsyncStorage.getItem("latitude").then((value) => {
+      this.setState({"latitude": value});
+    })
+    AsyncStorage.getItem("longitude").then((value) => {
+      this.setState({"longitude": value});
+    })
+  }
+  
   findCoordinates = () => {
     navigator.geolocation.getCurrentPosition(
       position => {
@@ -33,25 +42,18 @@ export default class App extends Component<Props> {
       error => Alert.alert("Please enable location services"),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
+    // this.getData();
+    // Alert.alert("Saved Lat: ", this.state.latitude)
+    // Alert.alert("Saved Lng: ", this.state.longitude)
   };
-  
-  save() {
-	  var KeyValue = [['latitude', this.state.latitude], ['longtitude', this.state.longitude]]
-	  AsyncStorage.multiSet(KeyValue, function(errs){
-      if(errs){
-        return;
-      }
-      alert('Lat&Lon store success');
-    });
-  }
   
   render() {
     return (
       <View style={styles.locationPrompt}>
         <WeatherWidget
           api = {"3a80ec57abc9400a446bdf8a2fafccd7"}
-          lat = {37.8267}
-          lng = {-122.4233}
+          lat = {35.8267}
+          lng = {-96.4233}
           style = {styles.weatherWidget}
         />
         <TouchableOpacity

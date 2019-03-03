@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "241621837295",
+    "firebase_url": "https://bringyourumbrella-462de.firebaseio.com",
+    "project_id": "bringyourumbrella-462de",
+    "storage_bucket": "bringyourumbrella-462de.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:241621837295:android:1018afe0ff86c744",
+        "android_client_info": {
+          "package_name": "com.bringyourumbrella"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "241621837295-ftpnlajjf6kf9phc3iatdnnnk376s74o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwkIxd_fUnlGaplN7M96nNN49MKXGpFWg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

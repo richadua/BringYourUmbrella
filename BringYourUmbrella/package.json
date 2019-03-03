@@ -7,13 +7,18 @@
     "test": "jest"
   },
   "dependencies": {
+    "firebase-messaging": "^1.0.6",
     "react": "16.6.3",
     "react-native": "0.58.6",
     "react-native-autocomplete-input": "^3.6.0",
+    "react-native-default-preference": "git+https://github.com/kevinresol/react-native-default-preference.git",
     "react-native-elements": "^1.1.0",
+
+
     "react-native-google-autocomplete": "^0.1.5",
     "react-native-vector-icons": "^6.3.0",
     "react-native-weather": "git+https://github.com/richadua/react-native-weather.git"
+
   },
   "devDependencies": {
     "babel-core": "7.0.0-bridge.0",

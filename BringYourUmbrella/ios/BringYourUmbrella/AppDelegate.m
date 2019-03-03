@@ -6,7 +6,7 @@
  */
 
 #import "AppDelegate.h"
-
+#import <React/RCTPushNotificationManager.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 
@@ -29,7 +29,75 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  [self scheduleNotification];
   return YES;
 }
+
+- (void)scheduleNotification
+{
+   UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:
+   @"Title" message:@"This is a test alert" delegate:self 
+   cancelButtonTitle:@"Cancel" otherButtonTitles:@"Ok", nil];
+   [alertView show];
+
+  [[UIApplication sharedApplication] cancelAllLocalNotifications];
+
+  UILocalNotification *notif = [[UILocalNotification alloc] init];
+  
+  notif.alertTitle = @"Welcome";
+  notif.alertBody = @"Thank You for installing Application";
+  notif.soundName = UILocalNotificationDefaultSoundName;
+
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDateComponents *components = [[NSDateComponents alloc] init];
+
+  components = [[NSCalendar currentCalendar] components:NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit fromDate:[NSDate date]];
+
+  NSInteger day = [components day];
+  NSInteger month = [components month];
+  NSInteger year = [components year];
+
+  [components setDay: day];
+  [components setMonth: month];
+  [components setYear: year];
+  [components setHour: 10];
+  [components setMinute: 0];
+  [components setSecond: 0];
+  [calendar setTimeZone: [NSTimeZone systemTimeZone]];
+  NSDate *dateToFire = [calendar dateFromComponents:components];
+
+  notif.fireDate = dateToFire;
+  notif.timeZone = [NSTimeZone systemTimeZone];
+  notif.repeatInterval = NSDayCalendarUnit;
+
+  [[UIApplication sharedApplication] scheduleLocalNotification:notif];
+}
+
+// Required to register for notifications
+ - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+ {
+  [RCTPushNotificationManager didRegisterUserNotificationSettings:notificationSettings];
+ }
+ // Required for the register event.
+ - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+ {
+  [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+ }
+ // Required for the notification event. You must call the completion handler after handling the remote notification.
+ - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+                                                        fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+ {
+   [RCTPushNotificationManager didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+ }
+ // Required for the registrationError event.
+ - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+ {
+  [RCTPushNotificationManager didFailToRegisterForRemoteNotificationsWithError:error];
+ }
+ // Required for the localNotification event.
+ - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+ {
+  [RCTPushNotificationManager didReceiveLocalNotification:notification];
+ }
 
 @end

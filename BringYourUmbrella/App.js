@@ -8,15 +8,15 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, Alert, TouchableOpacity, TextInput, ScrollView, Button, ActivityIndicator, AsyncStorage} from 'react-native';
+import {PushNotificationIOS, StyleSheet, Text, View, Alert, TouchableOpacity, TextInput, ScrollView, Button, ActivityIndicator, AsyncStorage} from 'react-native';
 import { GoogleAutoComplete } from 'react-native-google-autocomplete';
-import { WeatherWidget } from 'react-native-weather';
+import { WeatherWidget, temperature, precipitation } from 'react-native-weather';
 import LocationItem from './components/LocationItem'
 
 // const homePlace = {description: 'Home', geometry: { location: { lat: 48.8152937, lng: 2.4597668 } }};
 // const lastAddr = {description: 'Last Address', geometry: { location: { lat: JSON.stringify(this.state.latitude), lng: JSON.stringify(this.state.longitude) } }};
-
 type Props = {};
+var message = "";
 export default class App extends Component<Props> {
 
   state = {
@@ -34,26 +34,59 @@ export default class App extends Component<Props> {
   }
   
   findCoordinates = () => {
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        this.setState({ latitude: JSON.stringify(position.coords.latitude)});
-        this.setState({ longitude: JSON.stringify(position.coords.longitude)});
-      },
-      error => Alert.alert("Please enable location services"),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-    );
-    // this.getData();
-    // Alert.alert("Saved Lat: ", this.state.latitude)
-    // Alert.alert("Saved Lng: ", this.state.longitude)
+    // navigator.geolocation.getCurrentPosition(
+    //   position => {
+    //     this.setState({ latitude: JSON.stringify(position.coords.latitude)});
+    //     this.setState({ longitude: JSON.stringify(position.coords.longitude)});
+    //   },
+    //   error => Alert.alert("Please enable location services"),
+    //   { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    // );
+    if(temperature < 55)
+    {
+      message = "It is chilling out there. Make sure you carry your coat!";
+    }
+    else if( temperature >= 55 && temperature <= 77)
+    {
+      message = "It is going to be a pleasant day, make sure you take your sunglasses!";
+    }
+    else if(temperature >= 77)
+    {
+      message = "It a hot day outside, make sure you carry your sunscreen!";
+    }
+    if(precipitation > 50 && precipitation < 70)
+    {
+      message = "There might be showers today, make sure you carry an umbrella";
+    }
+    else if(precipitation > 70)
+    {
+      message = "Rain predicted! Don't forget to take your umbrella!"
+    }
+    this.getData();
+    Alert.alert("Saved Lat: ", this.state.latitude)
+    Alert.alert("Saved Lng: ", this.state.longitude)
   };
+
+  sendNotification = () => {
+    // this.getData();
+    // PushNotificationIOS.requestPermissions();
+    // let desiredNotificationDate = new Date(Date.now() + 60 * 1000);
+    // // let desiredNotificationDate = new Date().getHours(21);
+    // let fireDateVar = desiredNotificationDate.getTime()
+    // PushNotificationIOS.scheduleLocalNotification({
+    //   alertBody: message,
+    //   fireDate: fireDateVar,
+    //   repeatInterval: 'day'
+    // });
+  }
   
   render() {
     return (
       <View style={styles.locationPrompt}>
         <WeatherWidget
           api = {"3a80ec57abc9400a446bdf8a2fafccd7"}
-          lat = {35.8267}
-          lng = {-96.4233}
+          lat = {51.5074}
+          lng = {0.1278}
           style = {styles.weatherWidget}
         />
         <TouchableOpacity
@@ -61,6 +94,7 @@ export default class App extends Component<Props> {
          onPress={this.findCoordinates}>
          <Text> Use current location </Text>
        </TouchableOpacity>
+       <Button onPress = {this.sendNotification} title = "Send Notification"/>
         <Text style={styles.homeLoc}>Edit your home location here</Text>
         <GoogleAutoComplete apiKey={"AIzaSyATU8DzZYhal2hVPBUES5MvdF0HdbcdeM4"} debounce={500} minLength={3}>
           {({
@@ -133,7 +167,7 @@ const styles = StyleSheet.create({
     marginBottom: 50
   },
   weatherWidget: {
-    marginTop: 50
+    // marginTop: 20
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -147,6 +181,6 @@ const styles = StyleSheet.create({
   ScrollView: {
     width: 400,
     textAlign: 'left',
-    marginLeft: 70
+    marginLeft: 70,
   }
 });

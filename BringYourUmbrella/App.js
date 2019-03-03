@@ -42,30 +42,7 @@ export default class App extends Component<Props> {
     //   error => Alert.alert("Please enable location services"),
     //   { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     // );
-    if(temperature < 55)
-    {
-      message = "It is chilling out there. Make sure you carry your coat!";
-    }
-    else if( temperature >= 55 && temperature <= 77)
-    {
-      message = "It is going to be a pleasant day, make sure you take your sunglasses!";
-    }
-    else if(temperature >= 77)
-    {
-      message = "It a hot day outside, make sure you carry your sunscreen!";
-    }
-    if(precipitation > 50 && precipitation < 70)
-    {
-      message = "There might be showers today, make sure you carry an umbrella";
-    }
-    else if(precipitation > 70)
-    {
-      message = "Rain predicted! Don't forget to take your umbrella!"
-    }
-    this.getData();
-    Alert.alert("Saved Lat: ", this.state.latitude)
-    Alert.alert("Saved Lng: ", this.state.longitude)
-  };
+    
 
   sendNotification = () => {
     // this.getData();

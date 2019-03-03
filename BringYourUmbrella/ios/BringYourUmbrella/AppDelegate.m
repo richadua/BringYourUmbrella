@@ -33,44 +33,98 @@
   return YES;
 }
 
+- (NSString *) getWeatherDataFrom:(NSString *)url{
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    [request setHTTPMethod:@"GET"];
+    [request setURL:[NSURL URLWithString:url]];
+
+    NSError *error = nil;
+    NSHTTPURLResponse *responseCode = nil;
+
+    NSData *oResponseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&responseCode error:&error];
+
+    if([responseCode statusCode] != 200){
+        NSLog(@"Error getting %@, HTTP status code %i", url, [responseCode statusCode]);
+        return nil;
+    }
+
+    NSMutableArray *arrResult = [NSMutableArray array];
+    for (NSDictionary *dict in oResponseData) {
+        // NSLog(@"Temperature %@", dict[@"temperature"]);
+        // NSLog(@"Precipitation %@", dict[@"precipProbability"]);
+        [arrResult addObject:dict];
+    }
+
+    return [[NSString alloc] initWithData:oResponseData encoding:NSUTF8StringEncoding]; 
+}
+
 - (void)scheduleNotification
 {
-   UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:
-   @"Title" message:@"This is a test alert" delegate:self 
-   cancelButtonTitle:@"Cancel" otherButtonTitles:@"Ok", nil];
-   [alertView show];
-
-  [[UIApplication sharedApplication] cancelAllLocalNotifications];
-
-  UILocalNotification *notif = [[UILocalNotification alloc] init];
+  NSString *urlString = [[NSString alloc] initWithString:@"https://api.darksky.net/forecast/3a80ec57abc9400a446bdf8a2fafccd7/51.5074,0.1278"];
+  NSString *response = [self getWeatherDataFrom: urlString];
+  UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:
+                            @"Title" message:response delegate:self
+                                           cancelButtonTitle:@"Cancel" otherButtonTitles:@"Ok", nil];
+  [alertView show];
   
-  notif.alertTitle = @"Welcome";
-  notif.alertBody = @"Thank You for installing Application";
-  notif.soundName = UILocalNotificationDefaultSoundName;
+  int temperature = [[response objectAtIndex:0] objectForKey:@"temperature"];
+  int precipitation = (int)[[response objectAtIndex:0] objectForKey:@"precipProbability"] * 100;
 
-  NSCalendar *calendar = [NSCalendar currentCalendar];
-  NSDateComponents *components = [[NSDateComponents alloc] init];
+  if(temperature < 55)
+    {
+      message = "It is chilling out there. Make sure you carry your coat!";
+    }
+    else if( temperature >= 55 && temperature <= 77)
+    {
+      message = "It is going to be a pleasant day, make sure you take your sunglasses!";
+    }
+    else if(temperature >= 77)
+    {
+      message = "It a hot day outside, make sure you carry your sunscreen!";
+    }
+    if(precipitation > 50 && precipitation < 70)
+    {
+      message = "There might be showers today, make sure you carry an umbrella";
+    }
+    else if(precipitation > 70)
+    {
+      message = "Rain predicted! Don't forget to take your umbrella!"
+    }
+    // Alert.alert("Saved Lat: ", this.state.latitude)
+    // Alert.alert("Saved Lng: ", this.state.longitude)
+  };
 
-  components = [[NSCalendar currentCalendar] components:NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit fromDate:[NSDate date]];
-
-  NSInteger day = [components day];
-  NSInteger month = [components month];
-  NSInteger year = [components year];
-
-  [components setDay: day];
-  [components setMonth: month];
-  [components setYear: year];
-  [components setHour: 10];
-  [components setMinute: 0];
-  [components setSecond: 0];
-  [calendar setTimeZone: [NSTimeZone systemTimeZone]];
-  NSDate *dateToFire = [calendar dateFromComponents:components];
-
-  notif.fireDate = dateToFire;
-  notif.timeZone = [NSTimeZone systemTimeZone];
-  notif.repeatInterval = NSDayCalendarUnit;
-
-  [[UIApplication sharedApplication] scheduleLocalNotification:notif];
+//  [[UIApplication sharedApplication] cancelAllLocalNotifications];
+//
+//  UILocalNotification *notif = [[UILocalNotification alloc] init];
+//
+//  notif.alertTitle = @"Welcome";
+//  notif.alertBody = @"Thank You for installing Application";
+//  notif.soundName = UILocalNotificationDefaultSoundName;
+//
+//  NSCalendar *calendar = [NSCalendar currentCalendar];
+//  NSDateComponents *components = [[NSDateComponents alloc] init];
+//
+//  components = [[NSCalendar currentCalendar] components:NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit fromDate:[NSDate date]];
+//
+//  NSInteger day = [components day];
+//  NSInteger month = [components month];
+//  NSInteger year = [components year];
+//
+//  [components setDay: day];
+//  [components setMonth: month];
+//  [components setYear: year];
+//  [components setHour: 10];
+//  [components setMinute: 29];
+//  [components setSecond: 0];
+//  [calendar setTimeZone: [NSTimeZone systemTimeZone]];
+//  NSDate *dateToFire = [calendar dateFromComponents:components];
+//
+//  notif.fireDate = dateToFire;
+//  notif.timeZone = [NSTimeZone systemTimeZone];
+//  notif.repeatInterval = NSDayCalendarUnit;
+//
+//  [[UIApplication sharedApplication] scheduleLocalNotification:notif];
 }
 
 // Required to register for notifications

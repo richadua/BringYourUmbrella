@@ -34,7 +34,7 @@ class LocationItem extends PureComponent {
         //     if(errs){
         //     return;
         //     }
-        //     alert('Lat&Lon store success');
+        alert('Home Location Saved');
         // });
     }
 }

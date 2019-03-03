@@ -10,20 +10,18 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, Alert, TouchableOpacity, TextInput, ScrollView, ActivityIndicator} from 'react-native';
 import { GoogleAutoComplete } from 'react-native-google-autocomplete';
-import { WeatherWidget, temperature, precipitation } from 'react-native-weather';
+import { WeatherWidget, temperature, precipitation, humidity } from 'react-native-weather';
 import LocationItem from './components/LocationItem'
+import DefaultPreference from 'react-native-default-preference';
 
-// const homePlace = {description: 'Home', geometry: { location: { lat: 48.8152937, lng: 2.4597668 } }};
-// const lastAddr = {description: 'Last Address', geometry: { location: { lat: JSON.stringify(this.state.latitude), lng: JSON.stringify(this.state.longitude) } }};
 type Props = {};
-var message = "";
 export default class App extends Component<Props> {
 
   state = {
     latitude: null,
     longitude: null
   }
-  
+
   findCoordinates = () => {
     navigator.geolocation.getCurrentPosition(
       position => {
@@ -33,8 +31,9 @@ export default class App extends Component<Props> {
       error => Alert.alert("Please enable location services"),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
-    
-  
+  }
+
+
   render() {
     return (
       <View style={styles.locationPrompt}>
@@ -42,7 +41,8 @@ export default class App extends Component<Props> {
           api = {"3a80ec57abc9400a446bdf8a2fafccd7"}
           lat = {DefaultPreference.get('latitude')}
           lng = {DefaultPreference.get('longitude')}
-          style = {styles.weatherWidget}
+          // lat = {35.7813}
+          // lng = {-78.641678}
         />
         <TouchableOpacity
          style={styles.currentLoc}

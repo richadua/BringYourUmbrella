@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { View, Alert, Text, StyleSheet, TouchableOpacity, AsyncStorage } from 'react-native';
+import DefaultPreference from 'react-native-default-preference';
 
 class LocationItem extends PureComponent {
     state = {
@@ -23,13 +24,18 @@ class LocationItem extends PureComponent {
     }
 
     save() {
-        var KeyValue = [['latitude', this.state.latitude], ['longtitude', this.state.longitude]]
-        AsyncStorage.multiSet(KeyValue, function(errs){
-            if(errs){
-            return;
-            }
-            alert('Lat&Lon store success');
-        });
+        DefaultPreference.set("latitude", JSON.stringify(this.state.latitude));
+        DefaultPreference.set("longitude", JSON.stringify(this.state.longitude));
+        
+        // var KeyValue = [[‘latitude’, this.state.latitude], [‘longtitude’, this.state.longitude]]
+        // DefaultPreference.setName(‘Umbrella’);
+        // var KeyValue = [['latitude', JSON.stringify(this.state.latitude), ['longtitude', JSON.stringify(this.state.longitude)]]
+        // AsyncStorage.multiSet(KeyValue, function(errs){
+        //     if(errs){
+        //     return;
+        //     }
+        //     alert('Lat&Lon store success');
+        // });
     }
 }
 

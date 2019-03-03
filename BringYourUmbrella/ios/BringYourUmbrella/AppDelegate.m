@@ -33,7 +33,7 @@
   return YES;
 }
 
-- (NSString *) getWeatherDataFrom:(NSString *)url{
+- (NSMutableArray *) getWeatherDataFrom:(NSString *)url{
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request setHTTPMethod:@"GET"];
     [request setURL:[NSURL URLWithString:url]];
@@ -55,44 +55,63 @@
         [arrResult addObject:dict];
     }
 
-    return [[NSString alloc] initWithData:oResponseData encoding:NSUTF8StringEncoding]; 
+  return arrResult;
 }
 
 - (void)scheduleNotification
 {
-  NSString *urlString = [[NSString alloc] initWithString:@"https://api.darksky.net/forecast/3a80ec57abc9400a446bdf8a2fafccd7/51.5074,0.1278"];
-  NSString *response = [self getWeatherDataFrom: urlString];
-  UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:
-                            @"Title" message:response delegate:self
-                                           cancelButtonTitle:@"Cancel" otherButtonTitles:@"Ok", nil];
-  [alertView show];
+  NSString *latVal = [[NSUserDefaults standardUserDefaults] objectForKey: @"latitude"];
+  NSString *lngVal = [[NSUserDefaults standardUserDefaults] objectForKey: @"longitude"];
+  NSString *urlString = [[NSString alloc] initWithFormat:@"https://api.darksky.net/forecast/3a80ec57abc9400a446bdf8a2fafccd7/%@/%@", latVal, lngVal];
+  NSMutableArray *response = [self getWeatherDataFrom: urlString];
   
   int temperature = [[response objectAtIndex:0] objectForKey:@"temperature"];
   int precipitation = (int)[[response objectAtIndex:0] objectForKey:@"precipProbability"] * 100;
 
-  if(temperature < 55)
+  NSString *message = [[NSString alloc] init];
+
+  if(precipitation > 50 && precipitation < 70)
+  {
+    if(temperature < 55)
     {
-      message = "It is chilling out there. Make sure you carry your coat!";
+      message = @"It is chilling out there. Make sure you carry your coat!";
     }
     else if( temperature >= 55 && temperature <= 77)
     {
-      message = "It is going to be a pleasant day, make sure you take your sunglasses!";
+      message = @"It is going to be a pleasant day, make sure you take your sunglasses!";
     }
     else if(temperature >= 77)
     {
-      message = "It a hot day outside, make sure you carry your sunscreen!";
+      message = @"It a hot day outside, make sure you carry your sunscreen!";
     }
-    if(precipitation > 50 && precipitation < 70)
+    message = @"There might be showers today, make sure you carry an umbrella";
+  }
+  else if(precipitation > 70)
+  {
+    if(temperature < 55)
     {
-      message = "There might be showers today, make sure you carry an umbrella";
+      message = @"It is chilling out there. Make sure you carry your coat!";
     }
-    else if(precipitation > 70)
+    else if( temperature >= 55 && temperature <= 77)
     {
-      message = "Rain predicted! Don't forget to take your umbrella!"
+      message = @"It is going to be a pleasant day, make sure you take your sunglasses!";
     }
-    // Alert.alert("Saved Lat: ", this.state.latitude)
-    // Alert.alert("Saved Lng: ", this.state.longitude)
-  };
+    else if(temperature >= 77)
+    {
+      message = @"It a hot day outside, make sure you carry your sunscreen!";
+    }
+    message = @"Rain predicted! Don't forget to take your umbrella!";
+  }
+  
+  
+
+   UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:
+                           @"Title" message:message delegate:self
+                                          cancelButtonTitle:@"Cancel" otherButtonTitles:@"Ok", nil];
+  [alertView show];
+
+  // Alert.alert("Saved Lat: ", this.state.latitude)
+  // Alert.alert("Saved Lng: ", this.state.longitude)
 
 //  [[UIApplication sharedApplication] cancelAllLocalNotifications];
 //

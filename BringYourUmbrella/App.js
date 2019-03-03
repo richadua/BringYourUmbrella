@@ -8,7 +8,7 @@
  */
 
 import React, {Component} from 'react';
-import {PushNotificationIOS, StyleSheet, Text, View, Alert, TouchableOpacity, TextInput, ScrollView, Button, ActivityIndicator, AsyncStorage} from 'react-native';
+import {StyleSheet, Text, View, Alert, TouchableOpacity, TextInput, ScrollView, ActivityIndicator} from 'react-native';
 import { GoogleAutoComplete } from 'react-native-google-autocomplete';
 import { WeatherWidget, temperature, precipitation } from 'react-native-weather';
 import LocationItem from './components/LocationItem'
@@ -24,46 +24,24 @@ export default class App extends Component<Props> {
     longitude: null
   }
   
-  async getData() {
-    AsyncStorage.getItem("latitude").then((value) => {
-      this.setState({"latitude": value});
-    })
-    AsyncStorage.getItem("longitude").then((value) => {
-      this.setState({"longitude": value});
-    })
-  }
-  
   findCoordinates = () => {
-    // navigator.geolocation.getCurrentPosition(
-    //   position => {
-    //     this.setState({ latitude: JSON.stringify(position.coords.latitude)});
-    //     this.setState({ longitude: JSON.stringify(position.coords.longitude)});
-    //   },
-    //   error => Alert.alert("Please enable location services"),
-    //   { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-    // );
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        this.setState({ latitude: JSON.stringify(position.coords.latitude)});
+        this.setState({ longitude: JSON.stringify(position.coords.longitude)});
+      },
+      error => Alert.alert("Please enable location services"),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
     
-
-  sendNotification = () => {
-    // this.getData();
-    // PushNotificationIOS.requestPermissions();
-    // let desiredNotificationDate = new Date(Date.now() + 60 * 1000);
-    // // let desiredNotificationDate = new Date().getHours(21);
-    // let fireDateVar = desiredNotificationDate.getTime()
-    // PushNotificationIOS.scheduleLocalNotification({
-    //   alertBody: message,
-    //   fireDate: fireDateVar,
-    //   repeatInterval: 'day'
-    // });
-  }
   
   render() {
     return (
       <View style={styles.locationPrompt}>
         <WeatherWidget
           api = {"3a80ec57abc9400a446bdf8a2fafccd7"}
-          lat = {51.5074}
-          lng = {0.1278}
+          lat = {DefaultPreference.get('latitude')}
+          lng = {DefaultPreference.get('longitude')}
           style = {styles.weatherWidget}
         />
         <TouchableOpacity
@@ -71,7 +49,6 @@ export default class App extends Component<Props> {
          onPress={this.findCoordinates}>
          <Text> Use current location </Text>
        </TouchableOpacity>
-       <Button onPress = {this.sendNotification} title = "Send Notification"/>
         <Text style={styles.homeLoc}>Edit your home location here</Text>
         <GoogleAutoComplete apiKey={"AIzaSyATU8DzZYhal2hVPBUES5MvdF0HdbcdeM4"} debounce={500} minLength={3}>
           {({
